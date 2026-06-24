@@ -79,7 +79,34 @@ textarea{resize:vertical;min-height:36px}
 .setup-step b{color:var(--text)}
 .setup-step code{background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-family:monospace;font-size:11px;word-break:break-all}
 
-@media(max-width:900px){.sidebar{display:none}.g6{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){
+  .sidebar{display:none}
+  .g6{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .topbar{padding:0 12px;height:52px}
+  .topbar-title{font-size:13px}
+  .topbar-meta{display:none}
+  .topbar-right{gap:6px}
+  .topbar-right .badge{display:none}
+  .content{padding:12px}
+  .card{padding:12px 14px}
+  .g6{grid-template-columns:repeat(2,1fr);gap:6px}
+  .g4{grid-template-columns:repeat(2,1fr);gap:6px}
+  .g2{grid-template-columns:1fr;gap:8px}
+  .mc-value{font-size:18px}
+  .main{flex-direction:column}
+  .bottom-nav{display:flex}
+  .app{padding-bottom:60px}
+  table{font-size:11px}
+  th,td{padding:5px 6px}
+  .field-grid-form{grid-template-columns:repeat(2,1fr) !important}
+}
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--border);z-index:200;justify-content:space-around;padding:6px 0 8px}
+.bottom-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;color:var(--text2);cursor:pointer;padding:4px 8px;border-radius:var(--rsm);min-width:44px}
+.bottom-nav-item.active{color:var(--text);font-weight:600}
+.bottom-nav-item span{font-size:18px;line-height:1}
 </style>
 </head>
 <body>
@@ -118,7 +145,16 @@ textarea{resize:vertical;min-height:36px}
   </div>
 </div>
 
-<!-- TOPBAR -->
+<!-- BOTTOM NAV (mobile) -->
+<div class="bottom-nav" id="bottom-nav">
+  <div class="bottom-nav-item active" onclick="switchSection('overview',null,'📊')"><span>📊</span>Обзор</div>
+  <div class="bottom-nav-item" onclick="switchSection('managers',null,'👥')"><span>👥</span>Менедж.</div>
+  <div class="bottom-nav-item" onclick="switchSection('hot',null,'🔥')"><span>🔥</span>Клиенты</div>
+  <div class="bottom-nav-item" onclick="switchSection('entry',null,'✏️')"><span>✏️</span>Ввод</div>
+  <div class="bottom-nav-item" onclick="switchSection('report',null,'📋')"><span>📋</span>Отчёт</div>
+  <div class="bottom-nav-item" onclick="switchSection('analytics',null,'📈')"><span>📈</span>Аналит.</div>
+</div>
+
 <div class="topbar">
   <div>
     <div class="topbar-title">CRM — Продажа Isuzu ELF Рефрижератор</div>
@@ -568,11 +604,18 @@ function showStatus(msg,ok){
 }
 
 // ─── NAV ──────────────────────────────────────────────────────
-function switchSection(name,el){
+function switchSection(name,el,emoji){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('sec-'+name).classList.add('active');
   if(el) el.classList.add('active');
+  // highlight bottom nav
+  if(emoji){
+    document.querySelectorAll('.bottom-nav-item').forEach(n=>{
+      if(n.textContent.includes(emoji)) n.classList.add('active');
+    });
+  }
   const renders={
     overview:renderOverview, managers:renderManagers, funnel:renderFunnel,
     hot:renderHotClients, report:renderReport,
@@ -812,10 +855,10 @@ function buildForms(){
         <div class="av" style="background:${m.color}22;color:${m.color}">${m.initials}</div>
         <div><div style="font-weight:600;font-size:13px">${m.name} · ${m.seg}</div><div style="font-size:10px;color:var(--text2)">${m.segFull}</div></div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
-        ${FIELDS.map(f=>`<div><label>${f.label}</label><input type="number" min="0" step="1" id="${m.key}-${f.key}" value="0" style="height:32px"></div>`).join('')}
+      <div class="field-grid-form" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
+        ${FIELDS.map(f=>`<div><label style="font-size:11px">${f.label}</label><input type="number" min="0" step="1" id="${m.key}-${f.key}" value="0" style="height:40px;font-size:16px;text-align:center"></div>`).join('')}
       </div>
-      <div><label>Горячий клиент / следующий шаг</label><textarea id="${m.key}-note" placeholder="ООО Пример — осмотр завтра 10:00"></textarea></div>
+      <div><label>Горячий клиент / следующий шаг</label><textarea id="${m.key}-note" placeholder="ООО Пример — осмотр завтра 10:00" style="min-height:48px;font-size:14px"></textarea></div>
     </div>`).join('');
   formsBuilt=true;
 }
